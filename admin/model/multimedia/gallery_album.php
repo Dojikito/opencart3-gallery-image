@@ -3,7 +3,7 @@ class ModelMultimediaGalleryalbum extends Model {
 	public function addAlbum($data) {
 		$this->db->query("INSERT INTO " . DB_PREFIX . "album SET parent_id = '" . (int)$data['parent_id'] . "', sort_order = '" . (int)$data['sort_order'] . "', status = '" . (int)$data['status'] . "', date_modified = NOW(), date_added = NOW()");
 		$album_id = $this->db->getLastId();
-		
+
 		if (isset($data['image'])) {
 			$this->db->query("UPDATE " . DB_PREFIX . "album SET image = '" . $this->db->escape($data['image']) . "' WHERE album_id = '" . (int)$album_id . "'");
 		}
@@ -20,31 +20,34 @@ class ModelMultimediaGalleryalbum extends Model {
 			$level++;
 		}
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "album_path` SET `album_id` = '" . (int)$album_id . "', `path_id` = '" . (int)$album_id . "', `level` = '" . (int)$level . "'");
-		
+
 		if (isset($data['album_filter'])) {
 			foreach ($data['album_filter'] as $filter_id) {
 				$this->db->query("INSERT INTO " . DB_PREFIX . "album_filter SET album_id = '" . (int)$album_id . "', filter_id = '" . (int)$filter_id . "'");
 			}
 		}
-		
-		if (isset($data['album_image'])) {
-			foreach ($data['album_image'] as $album_image) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "album_image SET album_id = '" . (int)$album_id . "', image = '" . $this->db->escape($album_image['image']) . "', sort_order = '" . (int)$album_image['sort_order'] . "'");
-				$image_id = $this->db->getLastId();
-				if (isset($album_image['image_description'])) {
-					foreach ($album_image['image_description'] as $language_id => $value) {
-						$this->db->query("INSERT INTO " . DB_PREFIX . "album_image_description SET album_id = '" . (int)$album_id . "', image_id = '" . (int)$image_id . "', language_id = '" . (int)$language_id . "', label = '" . $this->db->escape($value['label']) . "', description = '" . $this->db->escape($value['description']) . "'");
-					}
-				}
-			}
-		}
+
+        if (isset($data['album_image'])) {
+            foreach ($data['album_image'] as $album_image) {
+                $sql = "INSERT INTO " . DB_PREFIX . "album_image SET album_id = '" . (int)$album_id . "', image = '" . $this->db->escape($album_image['image']) . "', sort_order = '" . (int)$album_image['sort_order'] . "'";
+                $this->db->query($sql);
+                $album_image_id = $this->db->getLastId();
+                if (isset($album_image['image_description'])) {
+                    foreach ($album_image['image_description'] as $language_id => $value) {
+                        $sql = "INSERT INTO " . DB_PREFIX . "album_image_description SET album_image_id = '" . (int)$album_image_id . "', language_id = '" . (int)$language_id . "', label = '" . $this->db->escape($value['label']) . "', description = '" . $this->db->escape($value['description']) . "'";
+                        $this->db->query($sql);
+                    }
+                }
+
+            }
+        }
 
 		if (isset($data['album_store'])) {
 			foreach ($data['album_store'] as $store_id) {
 				$this->db->query("INSERT INTO " . DB_PREFIX . "album_to_store SET album_id = '" . (int)$album_id . "', store_id = '" . (int)$store_id . "'");
 			}
 		}
-		
+
 		if (isset($data['album_seo_url'])) {
 			foreach ($data['album_seo_url'] as $store_id => $language) {
 				foreach ($language as $language_id => $keyword) {
@@ -54,7 +57,7 @@ class ModelMultimediaGalleryalbum extends Model {
 				}
 			}
 		}
-		
+
 		// Set which layout to use with this album
 		if (isset($data['album_layout'])) {
 			foreach ($data['album_layout'] as $store_id => $layout_id) {
@@ -129,20 +132,21 @@ class ModelMultimediaGalleryalbum extends Model {
 				$this->db->query("INSERT INTO " . DB_PREFIX . "album_to_store SET album_id = '" . (int)$album_id . "', store_id = '" . (int)$store_id . "'");
 			}
 		}
-		
-		$this->db->query("DELETE FROM " . DB_PREFIX . "album_image WHERE album_id = '" . (int)$album_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "album_image_description WHERE album_id = '" . (int)$album_id . "'");
-		if (isset($data['album_image'])) {
+
+        if (isset($data['album_image'])) {
             foreach ($data['album_image'] as $album_image) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "album_image SET album_id = '" . (int)$album_id . "', image = '" . $this->db->escape($album_image['image']) . "', sort_order = '" . (int)$album_image['sort_order'] . "'");
-                $image_id = $this->db->getLastId();
+                $sql = "INSERT INTO " . DB_PREFIX . "album_image SET album_id = '" . (int)$album_id . "', image = '" . $this->db->escape($album_image['image']) . "', sort_order = '" . (int)$album_image['sort_order'] . "'";
+                $this->db->query($sql);
+                $album_image_id = $this->db->getLastId();
                 if (isset($album_image['image_description'])) {
                     foreach ($album_image['image_description'] as $language_id => $value) {
-                        $this->db->query("INSERT INTO " . DB_PREFIX . "album_image_description SET album_id = '" . (int)$album_id . "', image_id = '" . (int)$image_id . "', language_id = '" . (int)$language_id . "', label = '" . $this->db->escape($value['label']) . "', description = '" . $this->db->escape($value['description']) . "'");
+                        $sql = "INSERT INTO " . DB_PREFIX . "album_image_description SET album_image_id = '" . (int)$album_image_id . "', language_id = '" . (int)$language_id . "', label = '" . $this->db->escape($value['label']) . "', description = '" . $this->db->escape($value['description']) . "'";
+                        $this->db->query($sql);
                     }
                 }
+
             }
-		}
+        }
 
 		// SEO URL
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url` WHERE query = 'album_id=" . (int)$album_id . "'");
@@ -276,35 +280,38 @@ class ModelMultimediaGalleryalbum extends Model {
 		}
 		return $album_layout_data;
 	}
-	
+
 	public function getAlbumImages($album_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "album_image WHERE album_id = '" . (int)$album_id . "' ORDER BY sort_order ASC");
+		$images = $this->db->query("SELECT * FROM " . DB_PREFIX . "album_image WHERE album_id = '" . (int)$album_id . "' ORDER BY sort_order ASC");
+
 		$results = array();
-		foreach ($query->rows as $image) {
-			$image_infos = $this->getImageDescription($image['album_image_id']);
-			$description = array();
-			foreach ($image_infos as $info) {
-				$description[$info['language_id']] = array(
-					'label'			=> $info['label'],
-					'description'	=> $info['description']
-				);
-			}
+		foreach ($images->rows as $image) {
+            $descriptions = $this->getAlbumImageDescription($image['album_image_id']);
+            foreach ($descriptions as $description) {
+                $descr[$description['language_id']] = array(
+                    'label' => $description['label'],
+                    'description' => $description['description']
+                );
+            }
+
 			$results[] = array(
 				'album_image_id'	=> $image['album_image_id'],
-				'album_id'			=> $image['album_id'],
+				'album_id'			=> $album_id,
 				'image'				=> $image['image'],
 				'is_video'			=> $image['is_video'],
 				'sort_order'		=> $image['sort_order'],
-				'description'		=> $description
+				'descriptions'		=> $descr
 			);
 		}
+
 		return $results;
 	}
-	
-	public function getImageDescription($image_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "album_image_description WHERE image_id = '" . (int)$image_id . "'");
-		return $query->rows;
-	}
+
+    public function getAlbumImageDescription($album_image_id) {
+	    $sql = "SELECT * FROM " . DB_PREFIX . "album_image_description WHERE album_image_id = '" . (int)$album_image_id . "'";
+        $query = $this->db->query($sql);
+	    return $query->rows;
+    }
 	
 	public function getAlbums($data = array()) {
 		$sql = "

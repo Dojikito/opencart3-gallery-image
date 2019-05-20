@@ -3,21 +3,22 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 	private $breadcrumbs_builded = array();
 	
 	public function index() {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 'On');
 		$this->load->language('multimedia/gallery_album');
 		$this->load->model('multimedia/gallery_album');
 		$this->load->model('tool/image');
 		$this->document->addStyle('catalog/view/theme/default/stylesheet/albums.css');
-		$this->document->addScript('catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js');
-		$this->document->addStyle('catalog/view/javascript/jquery/magnific/magnific-popup.css');
+        $this->document->addStyle('catalog/view/javascript/lightgallery/css/lightgallery.css');
 
-		if (isset($this->request->get['filter']))	{ $filter = $this->request->get['filter']; }		else { $filter = ''; }
-		if (isset($this->request->get['sort']))		{ $sort = $this->request->get['sort']; }			else { $sort = 'p.sort_order'; }
-		if (isset($this->request->get['order']))	{ $order = $this->request->get['order']; }			else { $order = 'ASC'; }
-		if (isset($this->request->get['page']))		{ $page = $this->request->get['page']; }			else { $page = 1; }
-		if (isset($this->request->get['limit']))	{ $limit = (int)$this->request->get['limit']; }		else { $limit = $this->config->get('theme_' . $this->config->get('config_theme') . '_product_limit'); }
-		if (isset($this->request->get['album_id']))	{ $album_id = $this->request->get['album_id']; }	else { $album_id = 0; }
+        $this->document->addScript('catalog/view/javascript/lightgallery/js/lightgallery.js');
+        $this->document->addScript('catalog/view/javascript/jquery.mousewheel.min.js');
+        $this->document->addScript('catalog/view/javascript/picturefill.min.js');
+
+		if (isset($this->request->get['filter']))   { $filter = $this->request->get['filter']; } else { $filter = ''; }
+		if (isset($this->request->get['sort']))     { $sort = $this->request->get['sort']; } else { $sort = 'p.sort_order'; }
+		if (isset($this->request->get['order']))    { $order = $this->request->get['order']; } else { $order = 'ASC'; }
+		if (isset($this->request->get['page']))     { $page = $this->request->get['page']; } else { $page = 1; }
+		if (isset($this->request->get['limit']))    { $limit = (int)$this->request->get['limit']; } else { $limit = $this->config->get('theme_' . $this->config->get('config_theme') . '_product_limit'); }
+		if (isset($this->request->get['album_id'])) { $album_id = $this->request->get['album_id']; }	else { $album_id = 0; }
 		
 		$data['breadcrumbs'] = array();
 		$data['breadcrumbs'][] = array(
@@ -95,13 +96,17 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 			
 			$data['images'] = array();
 			foreach ($images as $image) {
+			    $res_str = $this->model_tool_image->resize($image['image'], 375, 250) . ' 375' . $this->model_tool_image->resize($image['image'], 480, 320) . ' 480' . $this->model_tool_image->resize($image['image'], 800, 535) . ' 800';
 				$data['images'][] = array(
-					'thumb'	=> $this->model_tool_image->resize($image['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_gallery_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_gallery_image_thumb_height')),
-					'popup'	=> $this->model_tool_image->resize($image['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_gallery_image_popup_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_gallery_image_popup_height')),
-                    'label' => $image['label'],
-                    'description'  => $image['description']
+					'thumb'         => $this->model_tool_image->resize($image['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_gallery_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_gallery_image_thumb_height')),
+					'popup'         => $this->model_tool_image->resize($image['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_gallery_image_popup_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_gallery_image_popup_height')),
+                    'original'      => $image['image'],
+                    'respons'       => $res_str,
+                    'label'         => $image['label'],
+                    'description'   => $image['description']
 				);
 			}
+
 		} else {
 			$this->document->setTitle('Albums');
 			$this->document->setDescription('meta description');

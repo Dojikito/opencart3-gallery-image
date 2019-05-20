@@ -11,7 +11,7 @@ class ModelMultimediaGalleryAlbum extends Model {
 	}
 	
 	public function getImages($album_id) {
-		$sql = "SELECT * FROM " . DB_PREFIX . "album_image ai LEFT JOIN " . DB_PREFIX . "album_image_description aid ON (ai.album_image_id = aid.image_id) WHERE ai.album_id = '" . (int)$album_id . "' AND aid.album_id = '" . (int)$album_id . "' AND aid.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY ai.sort_order ASC";
+		$sql = "SELECT * FROM " . DB_PREFIX . "album_image ai LEFT JOIN " . DB_PREFIX . "album_image_description aid ON (ai.album_image_id = aid.album_image_id) WHERE ai.album_id = '" . (int)$album_id . "' AND aid.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY ai.sort_order ASC";
 		$query = $this->db->query($sql);
 		return $query->rows;
 	}
@@ -21,13 +21,6 @@ class ModelMultimediaGalleryAlbum extends Model {
 		$query = $this->db->query($sql);
 		return $query->row['name'];
 	}
-	
-	/*
-		$parents = array(
-			'album_id'	=> $album_id,
-			'name'		=> $name
-		);
-	*/
 	
 	public function getParents($album_id) {
 		$parents = array();

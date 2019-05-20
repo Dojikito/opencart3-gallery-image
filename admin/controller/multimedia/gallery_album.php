@@ -1,6 +1,6 @@
 <?php
 class ControllerMultimediaGalleryAlbum extends Controller {
-	private $error = array();
+	private $error = [];
 	
 	public function index() {
 		$this->load->language('multimedia/gallery_album');
@@ -13,15 +13,15 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 		$this->load->language('multimedia/gallery_album');
 		$this->document->setTitle($this->language->get('heading_title'));
 		$this->load->model('multimedia/gallery_album');
-
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_multimedia_gallery_album->addAlbum($this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
 			$url = '';
-			if (isset($this->request->get['sort']))		{ $url .= '&sort=' . $this->request->get['sort']; }
-			if (isset($this->request->get['order']))	{ $url .= '&order=' . $this->request->get['order']; }
-			if (isset($this->request->get['page']))		{ $url .= '&page=' . $this->request->get['page']; }
-			
+
+			if (isset($this->request->get['sort']))     { $url .= '&sort=' . $this->request->get['sort']; }
+			if (isset($this->request->get['order']))    { $url .= '&order=' . $this->request->get['order']; }
+			if (isset($this->request->get['page']))     { $url .= '&page=' . $this->request->get['page']; }
+
 			$this->response->redirect($this->url->link('multimedia/gallery_album', 'user_token=' . $this->session->data['user_token'] . $url, true));
 		}
 		$this->getForm();
@@ -36,11 +36,12 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 			$this->model_multimedia_gallery_album->editAlbum($this->request->get['album_id'], $this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
 			$url = '';
-			if (isset($this->request->get['sort'])) { $url .= '&sort=' . $this->request->get['sort']; }
-			if (isset($this->request->get['order'])) { $url .= '&order=' . $this->request->get['order']; }
-			if (isset($this->request->get['page'])) { $url .= '&page=' . $this->request->get['page']; }
-			
-			$this->response->redirect($this->url->link('multimedia/gallery_album', 'user_token=' . $this->session->data['user_token'] . $url, true));
+
+			if (isset($this->request->get['sort']))     { $url .= '&sort=' . $this->request->get['sort']; }
+			if (isset($this->request->get['order']))    { $url .= '&order=' . $this->request->get['order']; }
+			if (isset($this->request->get['page']))     { $url .= '&page=' . $this->request->get['page']; }
+
+			//$this->response->redirect($this->url->link('multimedia/gallery_album', 'user_token=' . $this->session->data['user_token'] . $url, true));
 		}
 		$this->getForm();
 	}
@@ -83,13 +84,13 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 	}
 	
 	protected function getList() {
-		if (isset($this->request->get['sort']))		{ $sort		= $this->request->get['sort'];	} else { $sort = 'name'; }
-		if (isset($this->request->get['order']))	{ $order	= $this->request->get['order'];	} else { $order = 'ASC'; }
-		if (isset($this->request->get['page']))		{ $page		= $this->request->get['page'];	} else { $page = 1; }
+		if (isset($this->request->get['sort']))     { $sort = $this->request->get['sort']; } else { $sort = 'name'; }
+		if (isset($this->request->get['order']))    { $order = $this->request->get['order']; } else { $order = 'ASC'; }
+		if (isset($this->request->get['page']))     { $page = $this->request->get['page']; } else { $page = 1; }
 		$url = '';
-		if (isset($this->request->get['sort']))		{ $url .= '&sort=' . $this->request->get['sort']; }
-		if (isset($this->request->get['order']))	{ $url .= '&order=' . $this->request->get['order']; }
-		if (isset($this->request->get['page']))		{ $url .= '&page=' . $this->request->get['page']; }
+		if (isset($this->request->get['sort']))     { $url .= '&sort=' . $this->request->get['sort']; }
+		if (isset($this->request->get['order']))    { $url .= '&order=' . $this->request->get['order']; }
+		if (isset($this->request->get['page']))     { $url .= '&page=' . $this->request->get['page']; }
 
 		$data['breadcrumbs'] = array();
 		$data['breadcrumbs'][] = array(
@@ -163,12 +164,9 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 	}
 	
 	protected function getForm() {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 'On');
-
 		$data['text_form'] = !isset($this->request->get['album_id']) ? $this->language->get('text_add') : $this->language->get('text_edit');
 
-		if (isset($this->error['warning'])) { $data['error_warning'] = $this->error['warning']; } else { $data['error_warning'] = ''; }
+		if (isset($this->error['warning'])) { $data['error'] = $this->error['warning']; } else { $data['error'] = ''; }
 		if (isset($this->error['name'])) { $data['error_name'] = $this->error['name']; } else { $data['error_name'] = array(); }
 		if (isset($this->error['meta_title'])) { $data['error_meta_title'] = $this->error['meta_title']; } else { $data['error_meta_title'] = array(); }
 		if (isset($this->error['keyword'])) { $data['error_keyword'] = $this->error['keyword']; } else { $data['error_keyword'] = ''; }
@@ -299,7 +297,7 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 		} else {
 			$album_images = array();
 		}
-		
+
 		$data['album_images'] = array();
 		foreach ($album_images as $album_image) {
 			if (is_file(DIR_IMAGE . $album_image['image'])) {
@@ -309,14 +307,14 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 				$image = '';
 				$thumb = 'no_image.png';
 			}
+
 			$data['album_images'][] = array(
 				'image'      	=> $image,
 				'thumb'      	=> $this->model_tool_image->resize($thumb, 100, 100),
 				'sort_order' 	=> $album_image['sort_order'],
-				'description'	=> $album_image['description']
+				'descriptions'	=> $album_image['descriptions'],
 			);
 		}
-		
 
 		if (isset($this->request->post['sort_order'])) {
 			$data['sort_order'] = $this->request->post['sort_order'];
@@ -405,7 +403,7 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 		}
 		
 		if ($this->error && !isset($this->error['warning'])) {
-			$this->error['warning'] = $this->language->get('error_warning');
+			//$this->error['warning'] = $this->language->get('error_warning');
 		}
 		
 		return !$this->error;
