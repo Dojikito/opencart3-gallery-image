@@ -41,7 +41,7 @@ class ControllerMultimediaGalleryAlbum extends Controller {
 			if (isset($this->request->get['order']))    { $url .= '&order=' . $this->request->get['order']; }
 			if (isset($this->request->get['page']))     { $url .= '&page=' . $this->request->get['page']; }
 
-			//$this->response->redirect($this->url->link('multimedia/gallery_album', 'user_token=' . $this->session->data['user_token'] . $url, true));
+			$this->response->redirect($this->url->link('multimedia/gallery_album', 'user_token=' . $this->session->data['user_token'] . $url, true));
 		}
 		$this->getForm();
 	}
